@@ -9,6 +9,7 @@ import Header from "./Header";
 import Footer from "./Footer";
 import ShareIcon from '@mui/icons-material/Share';
 function ProductDetails(props) {
+  let email = sessionStorage.getItem('user')
   const [postdata, setPostdata] = useState([]);
   const [images, setimages] = useState([]);
   const [mainimage, setmainimage] = useState();
@@ -31,6 +32,30 @@ function ProductDetails(props) {
         setimages(res.data.image);
       });
   }, []);
+  const addCart = (item, id) => {
+    if (localStorage.getItem('mycart') != undefined) {
+        let arr = JSON.parse(localStorage.getItem('mycart'));
+        console.log(arr);
+        if (arr.find(x => x.id == id) != undefined) {
+            let ind = arr.findIndex(x => x.id === id);
+            arr[ind] = { id: id, quantity: arr[ind].quantity + 1, item: item, email: email };
+            localStorage.setItem('mycart', JSON.stringify(arr));
+            alert("Product quantity is increased");
+        } else {
+            arr.push({ id: id, quantity: 1, item: item, email: email });
+            localStorage.setItem('mycart', JSON.stringify(arr));
+            // counter()
+            alert("Product Added to Cart")
+            window.location.reload(false);
+        }
+    } else {
+        let arr = [];
+        arr.push({ id: id, quantity: 1, item: item, email: email });
+        localStorage.setItem('mycart', JSON.stringify(arr));
+        alert("Product Added to Cart")
+        window.location.reload(false);
+    }
+}
   console.log(postdata);
   return (
     <div>
@@ -115,7 +140,7 @@ function ProductDetails(props) {
                         </div>
                       </div>
                       <div className="pt-2 ml-3" style={{float:'left'}}>
-                        <button className="btn btn-danger text-uppercase">Add To Cart</button>&nbsp;&nbsp;&nbsp;
+                        <button className="btn btn-danger text-uppercase" onClick={() => { addCart(postdata, postdata._id) }}>Add To Cart</button>&nbsp;&nbsp;&nbsp;
                         <button className="btn btn-info text-uppercase ml-3">Rate Product</button>
                       </div>
                     </div>
